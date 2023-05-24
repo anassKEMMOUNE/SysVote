@@ -55,16 +55,17 @@ class User {
     require 'dbConfig.php';
     
     // Check if user already exists
-    //$existingUser = $this->getByUsername($this->username, $conn);
-    //  if ($existingUser) {
-    //   echo "User already exists.";
-    //    return;
+
+    if ($this->checkIfExist()) {
+      echo "User already exists.";
+       return false;}
     
     $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $this->username, $this->email, $this->password);
     
     $stmt->execute();
     $conn->close();
+    return true;
   }
   
   
@@ -93,8 +94,61 @@ public static function getByUsername($username) {
   
     return null;
   }
+
+  public  function getID() {
+    require 'dbConfig.php';
+      $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+      
+      if (!$stmt) {
+        echo "Error: " . $conn->error;
+        return null;
+      }
+      
+      $stmt->bind_param("s", $this->username);
+      $stmt->execute();
+    
+      $result = $stmt->get_result();
+      $user = $result->fetch_assoc();
+    
+      $stmt->close();
+    
+      if ($user) {
+        return $user["user_id"];
+      }
+    
+      return null;
+    }
+    
   
+public function checkIfExist(){
+  require 'dbConfig.php';
+  $username = $this->username;
+  $email = $this->email;
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? or email = ?");
+    
+    if (!$stmt) {
+      echo "Error: " . $conn->error;
+      return null;
+    }
+    
+    $stmt->bind_param("ss", $username,$email);
+    $stmt->execute();
   
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if (is_null($row)){
+      return false;
+    }
+    else{
+      if (count($row)>0) { 
+        return true;}
+      else {
+        return false;}
+    }
+
+    $stmt->close();
+
+}
   
   // Update the user's email in the database
   public function updateEmail($newEmail) {
@@ -130,5 +184,10 @@ public static function getByUsername($username) {
       $stmt->close();
       $conn->close();
     }
+  public function candidateTO($name,$photo,$election_id){
+    require 'Candidates.php';
+    $candidate =  new Candidate($name,$photo,$election_id,$this->getID());
+    $candidate -> create();
+  }
 
 }

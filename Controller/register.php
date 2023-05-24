@@ -1,5 +1,5 @@
 <?php
-require_once "Model/user.php";
+require_once "../Model/user.php";
 // Function to sanitize user input
 function sanitize($data) {
     $data = trim($data);
@@ -17,12 +17,16 @@ function sanitize($data) {
     // Create a new User object
     $user = new User($username, $email, $password);
     // Save the user
-    $user->save();
+   if($user->save()){
     session_start();
     $_SESSION['username'] = $_POST['username'];
     // Redirect to success page or perform any other actions
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit();
+   }
+   else {
+    echo "username or email already used";
+   }
   }
   else {
     echo "error";

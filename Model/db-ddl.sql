@@ -24,7 +24,9 @@ CREATE TABLE Candidates (
   name VARCHAR(100) NOT NULL,
   photo VARCHAR(100) NOT NULL,
   election_id INTEGER,
-  FOREIGN KEY (election_id) REFERENCES Elections(election_id)
+  user_id INTEGER,
+  FOREIGN KEY (election_id) REFERENCES Elections(election_id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 DROP table if exists Votes;
 CREATE TABLE Votes (

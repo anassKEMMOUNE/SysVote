@@ -1,8 +1,8 @@
 <?php
 
 // Include the User class
-require_once 'Model/user.php';
-require_once 'Model/dbConfig.php';
+require_once '../Model/user.php';
+require_once '../Model/dbConfig.php';
 $userID;
 // Function to sanitize user input
 function sanitize($data) {
@@ -28,10 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $_SESSION['username'] = $username;
     if ($user->checkAdmin($username)){
         $_SESSION["is_admin"] = 1;
-        header('Location: adminDashboard.php');
+        header('Location: ../adminDashboard.php');
     }
     else{
-        header('Location: index.php');
+        header('Location: ../index.php');
     }
    
 

@@ -5,11 +5,13 @@ if (isset($_SESSION['username']) ){
 if ($_SESSION['username']){
 
 }
+
 else {
-    header('Location: login.html');
+    header('Location: view/login.html');
 }
 }
 else{
-    header('Location: login.html');
+    header('Location: view/login.html');
 }
+
 ?>

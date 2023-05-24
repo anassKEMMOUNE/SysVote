@@ -19,19 +19,49 @@ class Elections {
     require 'dbConfig.php';
     
     // Check if user already exists
-    //$existingUser = $this->getByUsername($this->username, $conn);
-    //  if ($existingUser) {
-    //   echo "User already exists.";
-    //    return;
-    
+ 
+     if ($this->checkIfExists()) {
+       echo "Election already exists.";
+        return false;
+     }
     $stmt = $conn->prepare("INSERT INTO elections (title, description, start_date,end_date) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $this->title, $this->description, $this->start_date,$end_date);
+    $stmt->bind_param("ssss", $this->title, $this->description, $this->start_date,$this->end_date);
     
     $stmt->execute();
     $conn->close();
+    echo "created success";
+    return true;
   }
   
-  
+  public function checkIfExists(){
+    require 'dbConfig.php';
+    $title = $this->title;
+      $stmt = $conn->prepare("SELECT * FROM elections WHERE title = ?");
+      
+      if (!$stmt) {
+        echo "Error: " . $conn->error;
+        return null;
+      }
+      
+      $stmt->bind_param("s", $title);
+      $stmt->execute();
+    
+      $result = $stmt->get_result();
+      $row = $result->fetch_assoc();
+      if (is_null($row)){
+        return false;
+      }
+      else{
+        if (count($row)>0) { 
+          return true;}
+        else {
+          return false;}
+      }
+
+      $stmt->close();
+    
+
+  }
 
   
   // Update the user's email in the database
@@ -52,17 +82,17 @@ class Elections {
   }
   
   // Delete the user from the database
-  public function delete() {
+  public static function deleteElection($title) {
     require 'dbConfig.php';    
 
     
     $stmt = $conn->prepare("DELETE FROM elections WHERE title = ?");
-    $stmt->bind_param("s", $this->title);
+    $stmt->bind_param("s", $title);
     
     if ($stmt->execute()) {
-      echo "User deleted successfully.";
+      echo "Election deleted successfully.";
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error: Election Not found" ;
       }
       
       $stmt->close();
